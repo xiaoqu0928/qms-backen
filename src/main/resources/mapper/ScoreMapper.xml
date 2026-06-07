@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.qms.mapper.ScoreMapper">
+
+    <select id="findBySubjectId" resultType="com.example.qms.entity.Score">
+        SELECT * FROM score WHERE subject_id = #{subjectId} ORDER BY student_id
+    </select>
+
+    <select id="findBySubjectIdAndStudentId" resultType="com.example.qms.entity.Score">
+        SELECT * FROM score WHERE subject_id = #{subjectId} AND student_id = #{studentId}
+    </select>
+
+    <select id="findById" resultType="com.example.qms.entity.Score">
+        SELECT * FROM score WHERE id = #{id}
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO score (subject_id, student_id, student_name, score, updated_at)
+        VALUES (#{subjectId}, #{studentId}, #{studentName}, #{score}, NOW())
+    </insert>
+
+    <update id="updateById">
+        UPDATE score SET score = #{score}, updated_at = NOW() WHERE id = #{id}
+    </update>
+
+    <delete id="deleteBySubjectId">
+        DELETE FROM score WHERE subject_id = #{subjectId}
+    </delete>
+
+    <select id="findAll" resultType="com.example.qms.entity.Score">
+        SELECT * FROM score ORDER BY subject_id, student_id
+    </select>
+
+    <!-- 原有新增 SQL -->
+    <select id="findAbnormalScores" resultType="java.util.Map">
+        SELECT sc.id AS scoreId, sc.student_id AS studentId, sc.student_name AS studentName,
+        sc.score, s.name AS subjectName, t.name AS teacherName
+        FROM score sc
+        JOIN subject s ON sc.subject_id = s.id
+        JOIN teacher t ON s.teacher_id = t.id
+        WHERE sc.score = '0' OR sc.score = '100'
+    </select>
+
+    <select id="getGradeDistribution" resultType="java.util.Map">
+        SELECT
+        CASE
+        WHEN CAST(score AS DECIMAL) >= 90 THEN '优秀'
+        WHEN CAST(score AS DECIMAL) >= 80 THEN '良好'
+        WHEN CAST(score AS DECIMAL) >= 60 THEN '及格'
+        ELSE '不及格'
+        END AS name,
+        COUNT(*) AS value
+        FROM score
+        GROUP BY name
+    </select>
+
+    <select id="getUploadTrend" resultType="java.util.Map">
+        SELECT DATE(updated_at) AS date, COUNT(*) AS count
+        FROM score
+        WHERE updated_at >= CURDATE() - INTERVAL 7 DAY
+        GROUP BY DATE(updated_at)
+        ORDER BY date
+    </select>
+
+    <!-- ========== 新增 SQL ========== -->
+    <select id="findByStudentId" resultType="java.util.Map">
+        SELECT s.subject_id, su.name AS subject_name, s.score
+        FROM score s
+        JOIN subject su ON s.subject_id = su.id
+        WHERE s.student_id = #{studentId}
+    </select>
+
+    <select id="getScoresByClassAndSubject" resultType="java.util.Map">
+        SELECT sc.score
+        FROM score sc
+        JOIN student st ON sc.student_id = st.student_id
+        WHERE st.class_name = #{className} AND sc.subject_id = #{subjectId}
+    </select>
+
+    <select id="getScoresByGradeAndSubject" resultType="java.util.Map">
+        SELECT sc.score
+        FROM score sc
+        JOIN student st ON sc.student_id = st.student_id
+        WHERE st.grade = #{grade} AND sc.subject_id = #{subjectId}
+    </select>
+
+    <select id="findByStudentIdAndSubjectId" resultType="java.util.Map">
+        SELECT score
+        FROM score
+        WHERE student_id = #{studentId} AND subject_id = #{subjectId}
+    </select>
+
+</mapper>

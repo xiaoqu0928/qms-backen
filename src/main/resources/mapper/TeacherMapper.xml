@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.qms.mapper.TeacherMapper">
+
+    <select id="findByPhone" resultType="com.example.qms.entity.Teacher">
+        SELECT * FROM teacher WHERE phone = #{phone}
+    </select>
+
+    <select id="findById" resultType="com.example.qms.entity.Teacher">
+        SELECT * FROM teacher WHERE id = #{id}
+    </select>
+
+    <select id="findAll" resultType="com.example.qms.entity.Teacher">
+        SELECT * FROM teacher ORDER BY created_at DESC
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO teacher (phone, name, password, email, created_at)
+        VALUES (#{phone}, #{name}, #{password}, #{email}, NOW())
+    </insert>
+
+    <update id="updateById">
+        UPDATE teacher
+        <set>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="name != null">name = #{name},</if>
+            <if test="password != null">password = #{password},</if>
+            <if test="email != null">email = #{email},</if>
+            <if test="status != null">status = #{status},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM teacher WHERE id = #{id}
+    </delete>
+
+    <select id="countTeachers" resultType="int">
+        SELECT COUNT(*) FROM teacher
+    </select>
+
+    <!-- 修改：返回教师ID和科目数 -->
+    <select id="getTeacherWorkload" resultType="java.util.Map">
+        SELECT t.id AS teacherId, t.name AS teacherName, COUNT(s.id) AS subjectCount
+        FROM teacher t
+        LEFT JOIN subject s ON t.id = s.teacher_id
+        GROUP BY t.id
+        ORDER BY subjectCount DESC
+    </select>
+
+</mapper>

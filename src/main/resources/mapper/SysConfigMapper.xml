@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.qms.mapper.SysConfigMapper">
+    <select id="findByKey" resultType="com.example.qms.entity.SysConfig">
+        SELECT * FROM sys_config WHERE config_key = #{configKey}
+    </select>
+    <update id="updateByKey">
+        UPDATE sys_config SET config_value = #{configValue}, updated_at = NOW()
+        WHERE config_key = #{configKey}
+    </update>
+</mapper>

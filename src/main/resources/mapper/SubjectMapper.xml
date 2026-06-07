@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.qms.mapper.SubjectMapper">
+
+    <select id="findByTeacherId" resultType="com.example.qms.entity.Subject">
+        SELECT * FROM subject WHERE teacher_id = #{teacherId} ORDER BY created_at DESC
+    </select>
+
+    <select id="findById" resultType="com.example.qms.entity.Subject">
+        SELECT * FROM subject WHERE id = #{id}
+    </select>
+
+    <select id="findAll" resultType="com.example.qms.entity.Subject">
+        SELECT * FROM subject ORDER BY created_at DESC
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO subject (teacher_id, name, semester, robot_webhook, created_at)
+        VALUES (#{teacherId}, #{name}, #{semester}, #{robotWebhook}, NOW())
+    </insert>
+
+    <update id="updateById">
+        UPDATE subject
+        <set>
+            <if test="name != null">name = #{name},</if>
+            <if test="semester != null">semester = #{semester},</if>
+            <if test="robotWebhook != null">robot_webhook = #{robotWebhook},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM subject WHERE id = #{id}
+    </delete>
+
+    <select id="countSubjects" resultType="int">
+        SELECT COUNT(*) FROM subject
+    </select>
+
+    <!-- 原有新增 SQL -->
+    <select id="countStudentsBySubjectIds" resultType="java.util.Map">
+        SELECT subject_id, COUNT(DISTINCT student_id) as studentCount
+        FROM score
+        WHERE subject_id IN
+        <foreach collection="subjectIds" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        GROUP BY subject_id
+    </select>
+
+    <select id="findSubjectsWithoutScores" resultType="java.util.Map">
+        SELECT s.id AS subjectId, s.name AS subjectName, t.name AS teacherName
+        FROM subject s
+        LEFT JOIN teacher t ON s.teacher_id = t.id
+        LEFT JOIN score sc ON s.id = sc.subject_id
+        WHERE sc.id IS NULL
+    </select>
+
+    <!-- ========== 新增 SQL ========== -->
+    <select id="findByIds" resultType="com.example.qms.entity.Subject">
+        SELECT * FROM subject WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="countSubjectsWithScores" resultType="java.util.Map">
+        SELECT s.teacher_id AS teacherId, COUNT(DISTINCT sc.subject_id) AS uploadedCount
+        FROM subject s
+        LEFT JOIN score sc ON s.id = sc.subject_id
+        WHERE sc.id IS NOT NULL
+        GROUP BY s.teacher_id
+    </select>
+
+</mapper>

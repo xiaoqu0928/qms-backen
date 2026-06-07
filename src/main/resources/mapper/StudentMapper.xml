@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.qms.mapper.StudentMapper">
+
+    <select id="findByStudentId" resultType="com.example.qms.entity.Student">
+        SELECT * FROM student WHERE student_id = #{studentId}
+    </select>
+
+    <select id="findAll" resultType="com.example.qms.entity.Student">
+        SELECT * FROM student ORDER BY student_id
+    </select>
+
+    <select id="countStudents" resultType="int">
+        SELECT COUNT(*) FROM student
+    </select>
+
+    <select id="findNeverQueriedStudents" resultType="java.util.Map">
+        SELECT s.student_id, s.name
+        FROM student s
+        LEFT JOIN query_log q ON s.student_id = q.student_id
+        WHERE q.id IS NULL
+        LIMIT 5
+    </select>
+
+    <!-- ========== 新增 SQL ========== -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO student (student_id, name, class_name, grade, created_at)
+        VALUES (#{studentId}, #{name}, #{className}, #{grade}, NOW())
+    </insert>
+
+    <update id="updateById">
+        UPDATE student
+        <set>
+            <if test="name != null">name = #{name},</if>
+            <if test="className != null">class_name = #{className},</if>
+            <if test="grade != null">grade = #{grade},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+</mapper>

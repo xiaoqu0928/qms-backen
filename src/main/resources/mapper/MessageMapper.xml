@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.qms.mapper.MessageMapper">
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO message (student_id, teacher_id, content, status, created_at)
+        VALUES (#{studentId}, #{teacherId}, #{content}, #{status}, NOW())
+    </insert>
+
+    <select id="findById" resultType="com.example.qms.entity.Message">
+        SELECT * FROM message WHERE id = #{id}
+    </select>
+
+    <select id="findByTeacherId" resultType="com.example.qms.entity.Message">
+        SELECT * FROM message WHERE teacher_id = #{teacherId} ORDER BY created_at DESC
+    </select>
+
+    <select id="findByStudentId" resultType="com.example.qms.entity.Message">
+        SELECT * FROM message WHERE student_id = #{studentId} ORDER BY created_at DESC
+    </select>
+
+    <update id="updateById">
+        UPDATE message
+        <set>
+            <if test="reply != null">reply = #{reply},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="repliedAt != null">replied_at = #{repliedAt},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+</mapper>
