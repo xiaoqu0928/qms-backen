@@ -31,10 +31,10 @@
             <version>3.0.4</version>
         </dependency>
 
-        <!-- 👇 这里我把 MySQL 换成 PostgreSQL，其他完全不动 -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
+            <version>42.7.3</version>
             <scope>runtime</scope>
         </dependency>
 
@@ -103,7 +103,6 @@
             <artifactId>easyexcel</artifactId>
             <version>4.0.3</version>
         </dependency>
-        <!-- 添加测试依赖 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>

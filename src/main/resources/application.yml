@@ -3,7 +3,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://db.prrrrrqxvtzvmvqekuly.supabase.co:5432/postgres?sslmode=require&serverTimezone=Asia/Shanghai&characterEncoding=utf8
+    url: jdbc:postgresql://db.prrrrrqxvtzvmvqekuly.supabase.co:5432/postgres?sslmode=require
     username: postgres
     password: Hhui040506!.
     driver-class-name: org.postgresql.Driver
